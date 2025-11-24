@@ -51,10 +51,10 @@ class DonType extends AbstractType
                 ]
             ])
             ->add('apte', CheckboxType::class, [
-                'label' => 'Donateur apte',
-                'required' => true,
+                'label' => 'Donateur médicalement apte',
+                'required' => false, // Les checkboxes non cochées ne sont pas envoyées, donc required doit être false
                 'attr' => ['class' => 'form-check-input'],
-                'help' => 'Cochez si le donateur est apte au don',
+                'help' => 'Cochez si le donateur est médicalement apte au don',
             ])
             ->add('commentaire', TextareaType::class, [
                 'label' => 'Commentaire (optionnel)',

@@ -74,9 +74,15 @@ final class LieuController extends AbstractController
     #[Route('/{id}', name: 'app_lieu_delete', methods: ['POST'])]
     public function delete(Request $request, Lieu $lieu, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$lieu->getId(), $request->getPayload()->getString('_token'))) {
+        // Récupérer le token depuis la requête POST (formulaire HTML)
+        $token = $request->request->get('_token');
+        
+        if ($this->isCsrfTokenValid('delete'.$lieu->getId(), $token)) {
             $entityManager->remove($lieu);
             $entityManager->flush();
+            $this->addFlash('success', 'Lieu supprimé avec succès.');
+        } else {
+            $this->addFlash('error', 'Token CSRF invalide. Suppression annulée.');
         }
 
         return $this->redirectToRoute('app_lieu_index', [], Response::HTTP_SEE_OTHER);

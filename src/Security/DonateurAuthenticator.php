@@ -28,15 +28,23 @@ class DonateurAuthenticator extends AbstractLoginFormAuthenticator
 
     public function authenticate(Request $request): Passport
     {
-        $email = $request->getPayload()->getString('_username');
+        // Le formulaire utilise 'email' et 'password' (configuré dans security.yaml)
+        // Mais on supporte aussi '_username' et '_password' pour compatibilité
+        $email = $request->request->get('email') ?? $request->request->get('_username');
+        $password = $request->request->get('password') ?? $request->request->get('_password');
+        $csrfToken = $request->request->get('_csrf_token');
+
+        if (!$email || !$password) {
+            throw new \InvalidArgumentException('Email et mot de passe sont requis.');
+        }
 
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
 
         return new Passport(
             new UserBadge($email),
-            new PasswordCredentials($request->getPayload()->getString('_password')),
+            new PasswordCredentials($password),
             [
-                new CsrfTokenBadge('authenticate', $request->getPayload()->getString('_csrf_token')),
+                new CsrfTokenBadge('authenticate', $csrfToken),
                 new RememberMeBadge(),
             ]
         );
@@ -45,14 +53,15 @@ class DonateurAuthenticator extends AbstractLoginFormAuthenticator
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         $user = $token->getUser();
+        $roles = $user->getRoles();
 
-        // 🔴 ADMIN
-        if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+        // 🔴 ADMIN ou ADMINISTRATEUR - Redirection vers le dashboard admin
+        if (in_array('ROLE_ADMIN', $roles, true) || in_array('ROLE_ADMINISTRATEUR', $roles, true)) {
             return new RedirectResponse($this->urlGenerator->generate('admin_dashboard'));
         }
 
-        // 🔵 DONATEUR (ROLE_USER)
-        if (in_array('ROLE_USER', $user->getRoles(), true)) {
+        // 🔵 DONATEUR (ROLE_USER ou ROLE_DONATEUR) - Redirection vers le dashboard donateur
+        if (in_array('ROLE_USER', $roles, true) || in_array('ROLE_DONATEUR', $roles, true)) {
             return new RedirectResponse($this->urlGenerator->generate('donateur_dashboard'));
         }
 
@@ -61,8 +70,8 @@ class DonateurAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        // Sécurité fallback
-        return new RedirectResponse('/');
+        // Sécurité fallback - Redirection vers le dashboard donateur par défaut
+        return new RedirectResponse($this->urlGenerator->generate('donateur_dashboard'));
     }
 
     protected function getLoginUrl(Request $request): string
