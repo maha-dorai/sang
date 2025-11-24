@@ -1,0 +1,95 @@
+
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('theme/css/dashboard.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('theme/js/dashboard.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <!-- ==== HEADER ==== -->
+    <h5>HELLO Donateur {{ user.prenom }} !</h5>
+    <h5>ID : {{ user.id }}</h5>
+
+    <form action="{{ path('app_logout') }}" method="post" style="margin-top: 10px;">
+        <button type="submit">LogOut</button>
+    </form>
+
+
+    <!-- ==== FLASH MESSAGES ==== -->
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ type == 'error' ? 'danger' : type }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+
+    <!-- ==== ÉLIGIBILITÉ ==== -->
+    <div class="elig-card">
+        <h3>📊 Votre Éligibilité au Don de Sang</h3>
+
+        {% if eligibilite.eligible %}
+            <div class="elig-ok">✅ {{ eligibilite.message }}</div>
+            <p><strong>Dernier don :</strong>
+                {{ user.derniereDateDon ? user.derniereDateDon|date('d/m/Y') : 'Jamais' }}
+            </p>
+        {% else %}
+            <div class="elig-no">❌ {{ eligibilite.message }}</div>
+            <p><strong>Dernier don :</strong> {{ user.derniereDateDon|date('d/m/Y') }}</p>
+            <p><strong>Prochaine date possible :</strong> {{ eligibilite.prochaineDate|date('d/m/Y') }}</p>
+            <p><strong>Jours restants :</strong> {{ eligibilite.joursRestants }} jour(s)</p>
+        {% endif %}
+    </div>
+
+
+    <!-- ==== RENDEZ-VOUS ==== -->
+    <h2>Mes Rendez-Vous</h2>
+
+    {% if ListRendezVous is empty %}
+        <p>Aucun rendez-vous trouvé.</p>
+    {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date Rendez Vous</th>
+                    <th>Statut</th>
+                    <th>Lieu</th>
+                    <th>Nom collecte</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for rdv in ListRendezVous %}
+                    <tr>
+                        <td>{{ rdv.dateHeureDebut ? rdv.dateHeureDebut|date('d/m/Y H:i') : '' }}</td>
+                        <td>{{ rdv.statut }}</td>
+                        <td>{{ rdv.collecte.lieu.nomLieu }}</td>
+                        <td>{{ rdv.collecte.nom }}</td>
+
+                        <td>
+                            {% if rdv.statut != 'Annulé' %}
+                                <a href="{{ path('annuler_RendezVous', {'id': rdv.id}) }}"
+                                   class="annuler-btn">
+                                    Annuler
+                                </a>
+                            {% else %}
+                                <span class="annule-text">Déjà annulé</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    {% endif %}
+</div>
+
+{% endblock %}

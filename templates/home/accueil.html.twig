@@ -1,0 +1,168 @@
+{# templates/home/accueil.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Blood Bank{% endblock %}
+
+{% block body %}
+    <!-- Intro Section -->
+    <section id="intro-slide">
+        <div class="container mt-2">
+            <h1 class="display-4 section-heading slide-heading mb-2 text-center">BLOOD BANK</h1>
+            <p class="slide-description text-center">Notre plateforme connecte les donneurs de sang avec ceux qui en ont besoin. Sauvez des vies avec nous.</p>
+            <div class="d-flex justify-content-center">
+                {% if not app.user %}
+                    <a href="{{ path('app_login') }}" class="mr-1 btn btn-lg btn-primary slide-btn">Se Connecter</a>
+                    <a href="{{ path('app_new_donateur') }}" class="ml-1 btn btn-lg btn-primary slide-btn">S'inscrire</a>
+                {% else %}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('admin_dashboard') }}" class="mr-1 btn btn-lg btn-primary slide-btn">Dashboard Admin</a>
+                    {% else %}
+                        <a href="{{ path('donateur_dashboard') }}" class="mr-1 btn btn-lg btn-primary slide-btn">Mon Espace</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="container">
+        <div class="row justify-content-around">
+            <div class="col-lg-1-5"></div>
+            <div class="col-lg-9">
+                <div class="row">
+                    <div class="col-md-4 my-2 my-md-0">
+                        <div class="card">
+                            <div class="mt-1 card-hover center">
+                                <img src="{{ asset('themes/imgs/card1.png') }}" class="wow animate__animated animate__slideInLeft card-img" alt="...">
+                            </div>
+                            <div class="card-body">
+                                <h4 class="card-title mt-1 content-heading">BESOIN DE SANG</h4>
+                                <p class="card-text content">Si vous avez besoin de sang, vous êtes au bon endroit. Nous pouvons vous aider à trouver des donneurs compatibles.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 my-2 my-md-0">
+                        <div class="card">
+                            <div class="mt-1 card-hover center">
+                                <img src="{{ asset('themes/imgs/card2.png') }}" class="wow animate__animated animate__slideInUp card-img" alt="...">
+                            </div>
+                            <div class="card-body">
+                                <h4 class="card-title mt-1 content-heading">TROUVER UN DONNEUR</h4>
+                                <p class="card-text content">Trouvez des donneurs de sang dans votre région et faites des demandes pour trouver le donneur requis.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 mb-5 mb-md-0 mt-2 mt-md-0">
+                        <div class="card">
+                            <div class="mt-1 card-hover center">
+                                <img src="{{ asset('themes/imgs/card3.png') }}" class="wow animate__animated animate__slideInRight card-img" alt="...">
+                            </div>
+                            <div class="card-body">
+                                <h4 class="card-title mt-1 content-heading">SAUVER DES VIES</h4>
+                                <p class="card-text content">Aidez à sauver des vies en vous inscrivant comme donneur et en acceptant les demandes de sang.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-1-5"></div>
+        </div>
+    </section>
+
+    <!-- Collectes Section -->
+    <section id="list" class="index-requests pb-5">
+        <br class="d-md-none">
+        <h2 class="display-4 section-heading text-center mb-4 pt-5 pt-md-0">Collectes de Sang</h2>
+        <div class="container">
+            <h5 class="content text-center slide-description mb-5">Participez à nos collectes de sang programmées. Voici les prochaines collectes près de chez vous.</h5>
+            <div class="row">
+                {% for collecte in collectes_list %}
+                <div class="col-12 col-md-6 col-lg-4 my-2 content">
+                    <div class="card">
+                        <div class="card-body pb-4">
+                            <div class="row">
+                                <div class="col-4 d-flex flex-column justify-content-center align-items-center">
+                                    <div class="blood-type text-center d-flex flex-column justify-content-center">
+                                        <p class="vertical-center">{{ collecte.lieu.ville|slice(0, 2)|upper }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-8">
+                                    <h5 class="mt-1 card-title name">{{ collecte.nom }}</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">
+                                        <i class="fas fa-map-marker-alt mr-2 mt-1"></i>
+                                        <span class="mt-1">{{ collecte.lieu.nomLieu }}</span>
+                                    </h6>
+                                    <p class="mt-3 card-text info">
+                                        <i class="fas fa-calendar mr-2"></i>
+                                        <span>{{ collecte.dateDebut|date('d/m/Y') }}</span><br>
+                                        <i class="fas fa-users mr-2 mt-1"></i>
+                                        <span class="mt-1">{{ collecte.capaciteMaximale }} places</span>
+                                    </p>
+                                  <a href="{{ path('Crre_RV_Par_Donateur_Id', {'collecteId': collecte.id}) }}">
+                                                Prendre rendez-vous
+                                            </a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>Aucune collecte programmée pour le moment.
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section id="counter">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-1"></div>
+                <div class="animate__animated animate__slideInLeft wow col-12 col-lg-6 vertical-center">
+                    <h1 class="display-4 section-heading about-heading mb-2 left">À PROPOS DE NOUS</h1>
+                    <p class="about-description left">Blood Bank Tunisia vise à aider les personnes ayant besoin de sang à trouver des donneurs. Les receveurs peuvent rechercher efficacement des donneurs en utilisant des filtres par région et groupe sanguin. De nombreuses personnes ont déjà trouvé des donneurs grâce à notre plateforme.</p>
+                </div>
+                <div class="col-lg-1"></div>
+                <div class="count-left-margin col-12 col-lg-4">
+                    <div class="row">
+                        <div class="col-12 col-sm-4 col-lg-12 mb-4">
+                            <div class="d-flex flex-row">
+                                <span aria-hidden="true" class="wow animate__animated animate__zoomIn icon-calendar fs1 mr-3 mr-md-4 mt-3"></span>
+                                <div class="d-flex flex-column">
+                                    <h2 class="display-4 count"><span class="counter">{{ collectes_list|length }}</span><span>+</span></h2>
+                                    <hr class="count-line mb-2">
+                                    <p class="counter-content">Collectes Actives</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4 col-lg-12 mb-4">
+                            <div class="d-flex flex-row">
+                                <span aria-hidden="true" class="wow animate__animated animate__zoomIn icon-users fs1 mr-3 mr-md-4 mt-3"></span>
+                                <div class="d-flex flex-column">
+                                    <h2 class="display-4 count"><span class="counter">50</span><span>+</span></h2>
+                                    <hr class="count-line mb-2">
+                                    <p class="counter-content">Donneurs Inscrits</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4 col-lg-12">
+                            <div class="d-flex flex-row">
+                                <span aria-hidden="true" class="wow animate__animated animate__zoomIn icon-trophy fs1 mr-3 mr-md-4 mt-3"></span>
+                                <div class="d-flex flex-column">
+                                    <h2 class="display-4 count"><span class="counter">100</span><span>+</span></h2>
+                                    <hr class="count-line mb-2">
+                                    <p class="counter-content">Vies Sauvées</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

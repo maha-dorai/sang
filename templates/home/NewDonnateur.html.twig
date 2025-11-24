@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+
+    <!-- Font Nunito -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Animate CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/style.css') }}">
+    <link rel="shortcut icon" href="{{ asset('themes/imgs/favicon.ico') }}">
+
+    <title>Login - Bleed To Save</title>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-light bg-light fixed-top py-0">
+        <div class="container">
+
+            <a href="{{ path('Accueil') }}" class="navbar-brand">
+                <img src="{{ asset('themes/imgs/nav-logo.png') }}" class="img-hover">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item pr-2">
+                        <a href="{{ path('Accueil') }}" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item pr-2">
+                        <a href="{{ path('app_login') }}" class="nav-link">Login</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- Title -->
+    <h1 class="display-4 section-heading form-gap mb-5 text-center">Login Form</h1>
+
+    <!-- Login Form -->
+    <section id="login-form" class="container">
+        <div class="col-lg-5 col-md-7 mb-5 login-form card mx-auto">
+            <div class="card-body my-4">
+
+ {% block body %}
+<section id="sign-up">
+    <div class="container">
+
+        <img src="{{ asset('theme/img/logo.png')}}" alt="">
+
+        {{ form_start(DonateurForm, {'attr': {'class': 'custom-form'}}) }}
+
+            <div class="form-group">
+                {{ form_widget(DonateurForm.prenom, {
+                    'attr': {'placeholder': 'Name', 'class': 'form-control'}
+                }) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_widget(DonateurForm.email, {
+                    'attr': {'placeholder': 'Email', 'class': 'form-control'}
+                }) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_widget(DonateurForm.password, {
+                    'attr': {'placeholder': 'Password', 'class': 'form-control'}
+                }) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_widget(DonateurForm.groupeSanguin, {
+                    'attr': {'class': 'form-control'}
+                }) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_widget(DonateurForm.lieu, {
+                    'attr': {'class': 'form-control'}
+                }) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_widget(DonateurForm.derniereDateDon, {
+                    'attr': {'class': 'form-control'}
+                }) }}
+            </div>
+
+            <button class="btn btn-primary" type="submit">Submit</button>
+
+        {{ form_end(DonateurForm) }}
+
+    </div>
+</section>
+{% endblock %}
+
+            </div>
+        </div>
+    </section>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{{ asset('themes/js/main.js') }}"></script>
+
+</body>
+</html>

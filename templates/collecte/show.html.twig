@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Collecte{% endblock %}
+
+{% block body %}
+    <h1>Collecte</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ collecte.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ collecte.nom }}</td>
+            </tr>
+            <tr>
+                <th>DateDebut</th>
+                <td>{{ collecte.dateDebut ? collecte.dateDebut|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>DateFin</th>
+                <td>{{ collecte.dateFin ? collecte.dateFin|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>CapaciteMaximale</th>
+                <td>{{ collecte.capaciteMaximale }}</td>
+            </tr>
+            <tr>
+                <th>Statut</th>
+                <td>{{ collecte.statut }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_collecte_index') }}">back to list</a>
+
+    <a href="{{ path('app_collecte_edit', {'id': collecte.id}) }}">edit</a>
+
+    {{ include('collecte/_delete_form.html.twig') }}
+{% endblock %}
