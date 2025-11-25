@@ -68,22 +68,17 @@ final class CollecteController extends AbstractController
         ]);
     }
 
-   #[Route('/{id}', name: 'app_collecte_delete', methods: ['POST'])]
-public function delete(Request $request, Collecte $collecte, EntityManagerInterface $entityManager): Response
-{
-    if ($this->isCsrfTokenValid('delete'.$collecte->getId(), $request->request->get('_token'))) {
-        
-        if (count($collecte->getRendezVous()) > 0) {
-            $this->addFlash('error', 'Impossible de supprimer : des rendez-vous sont liés à cette collecte.');
-        } else {
+    #[Route('/{id}', name: 'app_collecte_delete', methods: ['POST'])]
+    public function delete(Request $request, Collecte $collecte, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$collecte->getId(), $request->request->get('_token'))) {
+            // Grâce au CASCADE, les rendez-vous liés seront supprimés automatiquement
             $entityManager->remove($collecte);
             $entityManager->flush();
+            
             $this->addFlash('success', 'Collecte supprimée avec succès.');
         }
+
+        return $this->redirectToRoute('app_collecte_index');
     }
-
-    return $this->redirectToRoute('app_collecte_index');
-}
-
-
 }

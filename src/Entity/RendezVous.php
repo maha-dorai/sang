@@ -26,12 +26,13 @@ class RendezVous
     #[ORM\ManyToOne(inversedBy: 'rendezVous')]
     private ?Donateur $donateur = null;
 
+    /**
+     * Relation avec Collecte - CASCADE configuré
+     * Quand une Collecte est supprimée, tous ses RendezVous sont supprimés automatiquement
+     */
     #[ORM\ManyToOne(inversedBy: 'rendezVous')]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?Collecte $collecte = null;
-
-
-   
 
     public function getId(): ?int
     {
@@ -97,7 +98,4 @@ class RendezVous
 
         return $this;
     }
-
-   
-
 }

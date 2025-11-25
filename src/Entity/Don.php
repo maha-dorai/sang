@@ -32,12 +32,14 @@ class Don
     #[ORM\ManyToOne(inversedBy: 'dons')]
     private ?Donateur $donateurId = null;
 
+    /**
+     * CORRECTION : Ajout de onDelete: 'CASCADE'
+     * Quand un RendezVous est supprimé, tous ses Dons sont supprimés automatiquement
+     */
     #[ORM\ManyToOne(targetEntity: RendezVous::class)]
-    #[ORM\JoinColumn(name: "rendez_vous_id", referencedColumnName: "id", nullable: false)]
+    #[ORM\JoinColumn(name: "rendez_vous_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
     private ?RendezVous $rendezVous = null;
     
-    
-
     public function getId(): ?int
     {
         return $this->id;
@@ -126,6 +128,4 @@ class Don
 
         return $this;
     }
-
-   
 }
