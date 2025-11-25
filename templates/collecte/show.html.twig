@@ -3,40 +3,60 @@
 {% block title %}Collecte{% endblock %}
 
 {% block body %}
-    <h1>Collecte</h1>
-
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ collecte.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ collecte.nom }}</td>
-            </tr>
-            <tr>
-                <th>DateDebut</th>
-                <td>{{ collecte.dateDebut ? collecte.dateDebut|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>DateFin</th>
-                <td>{{ collecte.dateFin ? collecte.dateFin|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>CapaciteMaximale</th>
-                <td>{{ collecte.capaciteMaximale }}</td>
-            </tr>
-            <tr>
-                <th>Statut</th>
-                <td>{{ collecte.statut }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_collecte_index') }}">back to list</a>
-
-    <a href="{{ path('app_collecte_edit', {'id': collecte.id}) }}">edit</a>
-
-    {{ include('collecte/_delete_form.html.twig') }}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow border-0 mb-4">
+                <div class="card-header bg-danger text-white text-center">
+                    <h2 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Détail de la Collecte</h2>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered align-middle mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="bg-light">Id</th>
+                                <td>{{ collecte.id }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Nom</th>
+                                <td>{{ collecte.nom }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Date Début</th>
+                                <td>{{ collecte.dateDebut ? collecte.dateDebut|date('d/m/Y') : '' }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Date Fin</th>
+                                <td>{{ collecte.dateFin ? collecte.dateFin|date('d/m/Y') : '' }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Capacité Maximale</th>
+                                <td>{{ collecte.capaciteMaximale }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Statut</th>
+                                <td>
+                                    <span class="badge bg-{{ collecte.statut == 'Active' ? 'success' : 'secondary' }}">
+                                        {{ collecte.statut }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer d-flex justify-content-between align-items-center bg-white">
+                    <a href="{{ path('app_collecte_index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Retour à la liste
+                    </a>
+                    <div>
+                        <a href="{{ path('app_collecte_edit', {'id': collecte.id}) }}" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-edit me-1"></i> Modifier
+                        </a>
+                        {{ include('collecte/_delete_form.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

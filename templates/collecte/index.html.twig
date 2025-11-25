@@ -3,41 +3,64 @@
 {% block title %}Collecte index{% endblock %}
 
 {% block body %}
-    <h1>Collecte index</h1>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nom</th>
-                <th>DateDebut</th>
-                <th>DateFin</th>
-                <th>CapaciteMaximale</th>
-                <th>Statut</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for collecte in collectes %}
-            <tr>
-                <td>{{ collecte.id }}</td>
-                <td>{{ collecte.nom }}</td>
-                <td>{{ collecte.dateDebut ? collecte.dateDebut|date('Y-m-d') : '' }}</td>
-                <td>{{ collecte.dateFin ? collecte.dateFin|date('Y-m-d') : '' }}</td>
-                <td>{{ collecte.capaciteMaximale }}</td>
-                <td>{{ collecte.statut }}</td>
-                <td>
-                    <a href="{{ path('app_collecte_show', {'id': collecte.id}) }}">show</a>
-                    <a href="{{ path('app_collecte_edit', {'id': collecte.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="7">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_collecte_new') }}">Create new</a>
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0"><i class="fas fa-calendar-alt me-2 text-danger"></i>Liste des Collectes</h1>
+        <a href="{{ path('admin_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Retour Dashboard Admin
+        </a>
+    </div>
+    <div class="card shadow border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Id</th>
+                            <th>Nom</th>
+                            <th>Date Début</th>
+                            <th>Date Fin</th>
+                            <th>Capacité Max</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for collecte in collectes %}
+                        <tr>
+                            <td>{{ collecte.id }}</td>
+                            <td>{{ collecte.nom }}</td>
+                            <td>{{ collecte.dateDebut ? collecte.dateDebut|date('d/m/Y') : '' }}</td>
+                            <td>{{ collecte.dateFin ? collecte.dateFin|date('d/m/Y') : '' }}</td>
+                            <td>{{ collecte.capaciteMaximale }}</td>
+                            <td>
+                                <span class="badge bg-{{ collecte.statut == 'Active' ? 'success' : 'secondary' }}">
+                                    {{ collecte.statut }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ path('app_collecte_show', {'id': collecte.id}) }}" class="btn btn-sm btn-outline-info me-1">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ path('app_collecte_edit', {'id': collecte.id}) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">Aucune collecte trouvée.</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="mt-4 d-flex justify-content-end">
+        <a href="{{ path('app_collecte_new') }}" class="btn btn-danger">
+            <i class="fas fa-plus me-1"></i> Nouvelle Collecte
+        </a>
+    </div>
+</div>
 {% endblock %}

@@ -24,17 +24,49 @@ class RendezVousRepository extends ServiceEntityRepository
             ->setParameter('donateurId', $donateurId)
            ->getQuery()
            ->getResult();
+
+
     }  
-    
-    /**
-     * CORRECTION : Affiche TOUS les rendez-vous "Effectué" (avec ou sans don)
-     * Pour permettre la validation et la revalidation
-     */
     public function findEffectuesSansDon(): array
     {
         $em = $this->getEntityManager();
+        $conn = $em->getConnection();
         
-        // Récupérer TOUS les rendez-vous "Effectué" avec leurs relations
+        // Utiliser une requête SQL directe avec LEFT JOIN pour trouver les rendez-vous "Effectué" sans Don
+        // C'est la méthode la plus fiable
+        $rdvMetadata = $em->getClassMetadata('App\Entity\RendezVous');
+        $donMetadata = $em->getClassMetadata('App\Entity\Don');
+        $rdvTable = $rdvMetadata->getTableName();
+        $donTable = $donMetadata->getTableName();
+        $rdvIdColumn = $rdvMetadata->getSingleIdentifierColumnName();
+        
+        // Récupérer le nom de la colonne de jointure
+        $donRdvMapping = $donMetadata->getAssociationMapping('rendezVous');
+        $donRdvColumn = $donRdvMapping['joinColumns'][0]['name'] ?? 'rendez_vous_id';
+        
+        // Récupérer le nom de la colonne de date
+        $dateColumnMapping = $rdvMetadata->getFieldMapping('dateHeureDebut');
+        $dateColumn = $dateColumnMapping['columnName'] ?? 'date_heure_debut';
+        
+        // Requête SQL directe pour trouver les rendez-vous "Effectué" sans Don
+        $sql = "SELECT r.{$rdvIdColumn} as id
+                FROM {$rdvTable} r
+                LEFT JOIN {$donTable} d ON d.{$donRdvColumn} = r.{$rdvIdColumn}
+                WHERE LOWER(TRIM(r.statut)) IN ('effectué', 'effectue', 'effectuee')
+                AND d.id IS NULL
+                ORDER BY r.{$dateColumn} ASC";
+        
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery();
+        $rows = $result->fetchAllAssociative();
+        
+        $rdvIds = array_column($rows, 'id');
+        
+        if (empty($rdvIds)) {
+            return [];
+        }
+        
+        // Récupérer les rendez-vous avec leurs relations
         $qb = $this->createQueryBuilder('r')
             ->leftJoin('r.donateur', 'd')
             ->addSelect('d')
@@ -42,13 +74,13 @@ class RendezVousRepository extends ServiceEntityRepository
             ->addSelect('c')
             ->leftJoin('c.lieu', 'l')
             ->addSelect('l')
-            ->where('TRIM(r.statut) LIKE :statut')
-            ->setParameter('statut', '%Effectu%')
+            ->where('r.id IN (:ids)')
+            ->setParameter('ids', $rdvIds)
             ->orderBy('r.dateHeureDebut', 'ASC');
         
-        $rendezVous = $qb->getQuery()->getResult();
+        $rendezVousSansDon = $qb->getQuery()->getResult();
         
-        return $rendezVous;
+        return $rendezVousSansDon;
     }
     
     /**
@@ -64,8 +96,8 @@ class RendezVousRepository extends ServiceEntityRepository
             ->addSelect('c')
             ->leftJoin('c.lieu', 'l')
             ->addSelect('l')
-            ->where('r.statut LIKE :statut')
-            ->setParameter('statut', '%Effectu%')
+            ->where('r.statut = :statut')
+            ->setParameter('statut', 'Effectué')
             ->orderBy('r.dateHeureDebut', 'ASC')
             ->getQuery()
             ->getResult();
@@ -81,4 +113,31 @@ class RendezVousRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+    
+    //    /**
+    //     * @return RendezVous[] Returns an array of RendezVous objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('r')
+    //            ->andWhere('r.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('r.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
+
+    //    public function findOneBySomeField($value): ?RendezVous
+    //    {
+    //        return $this->createQueryBuilder('r')
+    //            ->andWhere('r.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
+
+
 }

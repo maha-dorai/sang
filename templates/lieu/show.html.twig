@@ -3,36 +3,52 @@
 {% block title %}Lieu{% endblock %}
 
 {% block body %}
-    <h1>Lieu</h1>
-
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ lieu.id }}</td>
-            </tr>
-            <tr>
-                <th>NomLieu</th>
-                <td>{{ lieu.nomLieu }}</td>
-            </tr>
-            <tr>
-                <th>Adresse</th>
-                <td>{{ lieu.adresse }}</td>
-            </tr>
-            <tr>
-                <th>Ville</th>
-                <td>{{ lieu.ville }}</td>
-            </tr>
-            <tr>
-                <th>CodePostal</th>
-                <td>{{ lieu.codePostal }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_lieu_index') }}">back to list</a>
-
-    <a href="{{ path('app_lieu_edit', {'id': lieu.id}) }}">edit</a>
-
-    {{ include('lieu/_delete_form.html.twig') }}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow border-0 mb-4">
+                <div class="card-header bg-danger text-white text-center">
+                    <h2 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Détail du Lieu</h2>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered align-middle mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="bg-light">Id</th>
+                                <td>{{ lieu.id }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Nom du Lieu</th>
+                                <td>{{ lieu.nomLieu }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Adresse</th>
+                                <td>{{ lieu.adresse }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Ville</th>
+                                <td>{{ lieu.ville }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Code Postal</th>
+                                <td>{{ lieu.codePostal }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer d-flex justify-content-between align-items-center bg-white">
+                    <a href="{{ path('app_lieu_index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Retour à la liste
+                    </a>
+                    <div>
+                        <a href="{{ path('app_lieu_edit', {'id': lieu.id}) }}" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-edit me-1"></i> Modifier
+                        </a>
+                        {{ include('lieu/_delete_form.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

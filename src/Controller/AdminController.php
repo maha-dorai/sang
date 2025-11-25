@@ -24,18 +24,28 @@ class AdminController extends AbstractController
     ): Response {
         $this->denyAccessUnlessGranted('ROLE_ADMINISTRATEUR');
 
-        // Compter uniquement les donateurs sans l'admin
+        // Compter uniquement les donateurs avec ROLE_DONATEUR
         $totalDonateurs = $donateurRepo->createQueryBuilder('d')
             ->select('COUNT(d.id)')
             ->where('d.roles LIKE :role')
-            ->setParameter('role', '%ROLE_USER%')
+            ->setParameter('role', '%ROLE_DONATEUR%')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        // Compter les rendez-vous à valider (Effectué sans Don associé)
+        $rdvAValider = $rdvRepo->createQueryBuilder('r')
+            ->select('COUNT(r.id)')
+            ->leftJoin('App\Entity\Don', 'd', 'WITH', 'd.rendezVous = r')
+            ->where('r.statut = :statut')
+            ->andWhere('d.id IS NULL')
+            ->setParameter('statut', 'Effectué')
             ->getQuery()
             ->getSingleScalarResult();
 
         $stats = [
             'totalDonateurs' => $totalDonateurs, 
             'stockCritique' => $stockRepo->count(['niveauAlerte' => 'Critique']),
-            'rdvAVALIDER' => $rdvRepo->count(['statut' => 'Confirmé']),
+            'rdvAVALIDER' => $rdvAValider,
         ];
 
         $stocksCritiques = $stockRepo->findBy(['niveauAlerte' => 'Critique']);
@@ -57,7 +67,7 @@ class AdminController extends AbstractController
 
         // Récupérer les rendez-vous "Effectué" sans Don associé
         $rendezVous = $rdvRepo->findEffectuesSansDon();
-        
+
         // DEBUG : Vérifier les rendez-vous "Effectué" et leurs Dons
         // Utiliser les métadonnées Doctrine pour obtenir les vrais noms de tables
         $conn = $entityManager->getConnection();
@@ -145,32 +155,32 @@ class AdminController extends AbstractController
                     if ($donExistant) {
                         $this->addFlash('error', 'Un don existe déjà pour ce rendez-vous.');
                     } else {
-                        $don = new Don();
-                        $don->setRendezVous($rdv);
-                        $don->setDonateurId($rdv->getDonateur());
-                        $don->setDatedon(new \DateTime());
+                    $don = new Don();
+                    $don->setRendezVous($rdv);
+                    $don->setDonateurId($rdv->getDonateur());
+                    $don->setDatedon(new \DateTime());
                         $don->setApte(false); // Valeur par défaut : non apte
-                        
-                        $form = $this->createForm(DonType::class, $don);
-                        $form->handleRequest($request);
+                    
+                    $form = $this->createForm(DonType::class, $don);
+                    $form->handleRequest($request);
 
-                        if ($form->isSubmitted() && $form->isValid()) {
+                    if ($form->isSubmitted() && $form->isValid()) {
                             // S'assurer que apte n'est pas null (false si non coché)
                             if ($don->isApte() === null) {
                                 $don->setApte(false);
                             }
                             
-                            // Persister le Don
-                            $entityManager->persist($don);
-                            
-                            // Mettre à jour derniereDateDon du Donateur si le don est apte
-                            $donateur = $don->getDonateurId();
+                        // Persister le Don
+                        $entityManager->persist($don);
+                        
+                        // Mettre à jour derniereDateDon du Donateur si le don est apte
+                        $donateur = $don->getDonateurId();
                             if ($donateur && $don->isApte() === true) {
-                                $donateur->setDerniereDateDon($don->getDatedon());
-                                $entityManager->persist($donateur);
-                            }
-                            
-                            $entityManager->flush();
+                            $donateur->setDerniereDateDon($don->getDatedon());
+                            $entityManager->persist($donateur);
+                        }
+                        
+                        $entityManager->flush();
 
                             $message = 'Don validé avec succès pour ' . $donateur->getPrenom();
                             if ($don->isApte()) {
@@ -181,10 +191,10 @@ class AdminController extends AbstractController
                             
                             $this->addFlash('success', $message);
 
-                            return $this->redirectToRoute('admin_don_valider');
-                        }
-                        
-                        $forms[$rdvId] = $form->createView();
+                        return $this->redirectToRoute('admin_don_valider');
+                    }
+                    
+                    $forms[$rdvId] = $form->createView();
                     }
                 }
             }

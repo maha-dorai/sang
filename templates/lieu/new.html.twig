@@ -3,9 +3,23 @@
 {% block title %}New Lieu{% endblock %}
 
 {% block body %}
-    <h1>Create new Lieu</h1>
-
-    {{ include('lieu/_form.html.twig') }}
-
-    <a href="{{ path('app_lieu_index') }}">back to list</a>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow border-0">
+                <div class="card-header bg-success text-white text-center rounded-top">
+                    <h3 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Créer un nouveau Lieu</h3>
+                </div>
+                <div class="card-body">
+                    {{ include('lieu/_form.html.twig') }}
+                    <div class="text-end mt-4">
+                        <a href="{{ path('app_lieu_index') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Retour à la liste
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

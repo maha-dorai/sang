@@ -3,39 +3,58 @@
 {% block title %}Lieu index{% endblock %}
 
 {% block body %}
-    <h1>Lieu index</h1>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>NomLieu</th>
-                <th>Adresse</th>
-                <th>Ville</th>
-                <th>CodePostal</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for lieu in lieus %}
-            <tr>
-                <td>{{ lieu.id }}</td>
-                <td>{{ lieu.nomLieu }}</td>
-                <td>{{ lieu.adresse }}</td>
-                <td>{{ lieu.ville }}</td>
-                <td>{{ lieu.codePostal }}</td>
-                <td>
-                    <a href="{{ path('app_lieu_show', {'id': lieu.id}) }}">show</a>
-                    <a href="{{ path('app_lieu_edit', {'id': lieu.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_lieu_new') }}">Create new</a>
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0"><i class="fas fa-map-marker-alt me-2 text-danger"></i>Liste des Lieux</h1>
+        <a href="{{ path('admin_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Retour Dashboard Admin
+        </a>
+    </div>
+    <div class="card shadow border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Id</th>
+                            <th>Nom du Lieu</th>
+                            <th>Adresse</th>
+                            <th>Ville</th>
+                            <th>Code Postal</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for lieu in lieus %}
+                        <tr>
+                            <td>{{ lieu.id }}</td>
+                            <td>{{ lieu.nomLieu }}</td>
+                            <td>{{ lieu.adresse }}</td>
+                            <td>{{ lieu.ville }}</td>
+                            <td>{{ lieu.codePostal }}</td>
+                            <td>
+                                <a href="{{ path('app_lieu_show', {'id': lieu.id}) }}" class="btn btn-sm btn-outline-info me-1">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ path('app_lieu_edit', {'id': lieu.id}) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">Aucun lieu trouvé.</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="mt-4 d-flex justify-content-end">
+        <a href="{{ path('app_lieu_new') }}" class="btn btn-danger">
+            <i class="fas fa-plus me-1"></i> Nouveau Lieu
+        </a>
+    </div>
+</div>
 {% endblock %}
