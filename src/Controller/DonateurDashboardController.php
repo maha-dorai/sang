@@ -188,7 +188,6 @@ class DonateurDashboardController extends AbstractController
             return $this->redirectToRoute('donateur_dashboard');
 
         }
-       
 
         $rendezVous = new RendezVous();
         $rendezVous->setDonateur($user);

@@ -72,7 +72,6 @@ final class CollecteController extends AbstractController
     public function delete(Request $request, Collecte $collecte, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$collecte->getId(), $request->request->get('_token'))) {
-            // Grâce au CASCADE, les rendez-vous liés seront supprimés automatiquement
             $entityManager->remove($collecte);
             $entityManager->flush();
             

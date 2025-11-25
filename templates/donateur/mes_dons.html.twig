@@ -1,36 +1,268 @@
-<link rel="stylesheet" href="{{ asset('themes/css/dons-table.css') }}">
+<!DOCTYPE html>
+<html lang="fr">
 
-<div class="dons-container">
-    <div class="dons-header">
-        <span></span> Mes Dons
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <!-- Font Nunito -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Animate CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/fonts.css') }}">
+    <link rel="shortcut icon" href="{{ asset('themes/imgs/favicon.ico') }}">
+    <title>{% block title %}Blood Bank - Mes Dons{% endblock %}</title>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-light fixed-top py-0">
+        <div class="container">
+            <a href="{{ path('Accueil') }}" class="img-fluid navbar-brand">
+                <img src="{{ asset('themes/imgs/nav-logo.png') }}" class="img-hover">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="justify-content-end collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item pr-2">
+                        <a href="{{ path('Accueil') }}" class="nav-link {{ app.request.attributes.get('_route') == 'Accueil' ? 'active' : '' }}">Accueil</a>
+                    </li>
+                    {% if app.user %}
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li class="nav-item pr-2">
+                                <a href="{{ path('admin_dashboard') }}" class="nav-link">Dashboard Admin</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item pr-2">
+                                <a href="{{ path('donateur_dashboard') }}" class="nav-link">Mon Dashboard</a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item pr-2">
+                            <a href="{{ path('app_logout') }}" class="nav-link">Déconnexion</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item pr-2">
+                            <a href="{{ path('app_login') }}" class="nav-link">Connexion</a>
+                        </li>
+                        <li class="nav-item pr-2">
+                            <a href= "{{ path('app_new_donateur') }}" class="nav-link">S'inscrire</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    {% block body %}
+    <div class="container mt-5 pt-5">
+        <div class="dons-container">
+            <div class="dons-header mb-4">
+                <h2><i class="fas fa-heartbeat mr-2"></i> Mes Dons</h2>
+            </div>
+
+            <!-- Barre de recherche -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Rechercher dans mes dons...">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary" type="button" id="searchButton">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-right">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-filter"></i> Filtrer
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item filter-option" data-filter="all" href="#">Tous les dons</a>
+                            <a class="dropdown-item filter-option" data-filter="apte" href="#">Dons aptes</a>
+                            <a class="dropdown-item filter-option" data-filter="inapte" href="#">Dons inaptes</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item filter-option" data-filter="sang" href="#">Dons de sang</a>
+                            <a class="dropdown-item filter-option" data-filter="plasma" href="#">Dons de plasma</a>
+                            <a class="dropdown-item filter-option" data-filter="plaquettes" href="#">Dons de plaquettes</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if dons is empty %}
+                <div class="dons-empty text-center p-5">
+                    <i class="fas fa-tint fa-3x mb-3 text-muted"></i>
+                    <h4 class="text-muted">Aucun don enregistré</h4>
+                    <p class="text-muted">Vous n'avez pas encore effectué de don.</p>
+                </div>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="dons-table table table-striped table-hover">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Date</th>
+                                <th>Quantité</th>
+                                <th>Type</th>
+                                <th>Apte</th>
+                                <th>Commentaire</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for don in dons %}
+                                <tr>
+                                    <td>{{ don.datedon|date('d/m/Y') }}</td>
+                                    <td>{{ don.quantite }}</td>
+                                    <td>
+                                        <span class="badge badge-pill badge-primary">{{ don.typeDon }}</span>
+                                    </td>
+                                    <td>
+                                        {% if don.apte %}
+                                            <span class="badge badge-success">Oui</span>
+                                        {% else %}
+                                            <span class="badge badge-danger">Non</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ don.commentaire }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
     </div>
+    {% endblock %}
 
-    {% if dons is empty %}
-        <div class="dons-empty">Aucun don enregistré</div>
-    {% else %}
-        <table class="dons-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Quantité</th>
-                    <th>Type</th>
-                    <th>Apte</th>
-                    <th>Commentaire</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for don in dons %}
-                    <tr>
-                        <td>{{ don.datedon|date('d/m/Y') }}</td>
-                        <td>{{ don.quantite }}</td>
-                        <td>{{ don.typeDon }}</td>
-                        <td>{{ don.apte ? 'true' : 'false' }}</td>
-                        <td>{{ don.commentaire }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
-</div>
+    <!-- Contact Us -->
+    <footer id="contact-us">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-sm-5 center vertical-center">
+                    <img src="{{ asset('themes/imgs/logo.png') }}" class="footer-logo img-fluid img-hover">
+                </div>
+                <div class="col-4 col-sm-2 center">
+                    <ul>
+                        <li>
+                            <p><a href="{{ path('Accueil') }}">Accueil</a></p>
+                        </li>
+                        <li>
+                            <p><a href="{{ path('app_login') }}">Connexion</a></p>
+                        </li>
+                        <li>
+                            <p><a href="#">Inscription</a></p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-8 col-sm-5 center">
+                    <ul>
+                        <li>
+                            <p><i class="fab fa-instagram mr-2 "></i><a href="# ">bloodbank_tn</a></p>
+                        </li>
+                        <li>
+                            <p><i class="fab fa-facebook mr-2 "></i><a href="# ">BloodBank Tunisia</a></p>
+                        </li>
+                        <li>
+                            <p><i class="fab fa-twitter mr-2 "></i><a href="# ">@BloodBankTN</a></p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-<script src="{{ asset('theme/js/dons-table.js') }}"></script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js " integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj " crossorigin="anonymous "></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js " integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN " crossorigin="anonymous "></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js " integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV " crossorigin="anonymous "></script>
+    
+    <!-- Template Scripts -->
+    <script src="{{ asset('themes/js/jquery.counterup.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('themes/js/jquery.waypoints.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('themes/js/wow.min.js') }}" type="text/javascript "></script>
+    
+    <script>
+        $(function() {
+            $(document).scroll(function() {
+                var $nav = $("#mainNavbar ");
+                $nav.toggleClass("scrolled ", $(this).scrollTop() > $nav.height());
+            });
+        });
+        
+        $('.counter').counterUp({
+            delay: 10,
+            time: 1000,
+        });
+        
+        new WOW().init();
+    </script>
+    
+    <!-- Script pour la barre de recherche et filtres -->
+    <script>
+        $(document).ready(function() {
+            // Fonction de recherche
+            $('#searchInput').on('keyup', function() {
+                var value = $(this).val().toLowerCase();
+                $('.dons-table tbody tr').filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+
+            // Fonction de filtre
+            $('.filter-option').on('click', function(e) {
+                e.preventDefault();
+                var filter = $(this).data('filter');
+                
+                $('.dons-table tbody tr').each(function() {
+                    var row = $(this);
+                    var typeDon = row.find('td:nth-child(3)').text().toLowerCase();
+                    var apte = row.find('td:nth-child(4)').text().toLowerCase();
+                    
+                    switch(filter) {
+                        case 'all':
+                            row.show();
+                            break;
+                        case 'apte':
+                            row.toggle(apte === 'oui');
+                            break;
+                        case 'inapte':
+                            row.toggle(apte === 'non');
+                            break;
+                        case 'sang':
+                            row.toggle(typeDon.includes('sang'));
+                            break;
+                        case 'plasma':
+                            row.toggle(typeDon.includes('plasma'));
+                            break;
+                        case 'plaquettes':
+                            row.toggle(typeDon.includes('plaquettes'));
+                            break;
+                    }
+                });
+            });
+
+            // Recherche via le bouton
+            $('#searchButton').on('click', function() {
+                $('#searchInput').trigger('keyup');
+            });
+        });
+    </script>
+    
+    <script src="{{ asset('themes/js/dons-table.js') }}"></script>
+    
+    {% block javascripts %}{% endblock %}
+</body>
+
+</html>

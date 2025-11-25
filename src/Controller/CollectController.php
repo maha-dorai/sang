@@ -29,10 +29,4 @@ final class CollectController extends AbstractController
 
     }
 
-   
-   
-
-    
-
-   
 }
